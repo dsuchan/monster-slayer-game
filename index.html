@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue Basics</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/vue@next" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>Monster Slayer</h1>
+    </header>
+    <div id="game">
+      <section id="monster" class="container">
+        <h2>Monster Health</h2>
+        <div class="healthbar">
+          <!-- Update the styling of healthbar by binding it with 'monsterHealth' in % -->
+          <div class="healthbar__value" :style="monsterBarStyles"></div>
+        </div>
+      </section>
+      <section id="player" class="container">
+        <h2>Your Health</h2>
+        <div class="healthbar">
+          <div class="healthbar__value" :style="playerBarStyles"></div>
+        </div>
+      </section>
+
+      <!-- Game over section -->
+      <!-- This section will show up only if 'winner' is true -->
+      <section class="container" v-if="winner">
+        <h2>Game Over!</h2>
+        <h3 v-if="winner === 'monster'">You lost!</h3>
+        <h3 v-else-if="winner === 'player'">You won!</h3>
+        <h3 v-else="winner === 'draw'">It's a draw!</h3>
+        <!-- Reset game button -->
+        <button @click="resetGame">Start New Game</button>
+      </section>
+
+      <!-- 'v-else' ensures that if player does not win, the '#controls' will be hidden -->
+      <section id="controls" v-else>
+        <!-- Attack button triggers the 'attackMonster' function -->
+        <button @click="attackMonster">ATTACK</button>
+        <!-- 'disabled' will trigger only if the condition of 'mayUseSpecialAttack' is met -->
+        <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">
+          SPECIAL ATTACK
+        </button>
+        <!-- Heals player on click -->
+        <button @click="healPlayer">HEAL</button>
+        <!-- Surrenders on click -->
+        <button @click="surrender">SURRENDER</button>
+      </section>
+
+      <!-- Battle log -->
+      <section id="log" class="container">
+        <h2>Battle Log</h2>
+        <ul>
+          <!-- Loops over every single 'logMessage' in 'logMessages' arr -->
+          <li v-for="logMessage in logMessages">
+            <!-- Adding dynamic classes whether the action is done by player or by monster -->
+            <span
+              :class="{'log--player': logMessage.actionBy === 'player', 'log--monster': logMessage.actionBy === 'monster'}"
+              >{{ logMessage.actionBy === 'player' ? 'Player' : 'Monster'
+              }}</span
+            >
+            <!-- If player heals himself -> show that in the battle log -->
+            <span v-if="logMessage.actionType === 'heal'">
+              heals himself for
+              <span class="log--heal">{{ logMessage.actionValue}}</span></span
+            >
+
+            <!-- Only other action is attack -> that's the perfect use of 'v-else' -->
+            <span v-else>
+              attacks and deals
+              <span class="log--damage">{{ logMessage.actionValue}}</span>
+            </span>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>
